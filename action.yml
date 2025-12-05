@@ -25,22 +25,45 @@ inputs:
     description: 'Output filename. Default: hoc-badge.svg'
     required: false
     default: 'hoc-badge.svg'
+  rounding:
+    description: 'Rounding mode. Default: I'
+    required: false
+    default: 'I'
+  color:
+    description: 'Background color. Default: green'
+    required: false
+    default: 'green'
 
 runs:
   using: "composite"
   steps:
     - uses: actions/checkout@v4
-    - uses: ruby/setup-ruby@v1.172.0
       with:
-        ruby-version: '3.3.0'
+        fetch-depth: 0
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.4'
     - name: Generate badge
-      run: $GITHUB_ACTION_PATH/generate-badge.sh $BEFORE $DIR $EXCLUDE $SINCE $OUTPUT_DIR $FILENAME
+      run: |
+        gem install hoc
+        pip install anybadge
+        $GITHUB_ACTION_PATH/generate-badge.sh \
+          -b "$BEFORE" \
+          -c "$COLOR" \
+          -d "$DIR" \
+          -e "$EXCLUDE" \
+          -f "$FILENAME" \
+          -o "$OUTPUT_DIR" \
+          -r "$ROUNDING" \
+          -s "$SINCE"
       shell: bash
       env:
-        BEFORE:   ${{ inputs.before }}
-        DIR:      ${{ inputs.dir }}
-        EXCLUDE:  ${{ inputs.exclude }}
-        SINCE:    ${{ inputs.since }}
-        OUTPUT_DIR:    ${{ inputs.output_dir }}
+        BEFORE:      ${{ inputs.before }}
+        COLOR:       ${{ inputs.color }}
+        DIR:         ${{ inputs.dir }}
+        EXCLUDE:     ${{ inputs.exclude }}
         FILENAME:    ${{ inputs.filename }}
+        OUTPUT_DIR:  ${{ inputs.output_dir }}
+        ROUNDING:    ${{ inputs.rounding }}
+        SINCE:       ${{ inputs.since }}
 

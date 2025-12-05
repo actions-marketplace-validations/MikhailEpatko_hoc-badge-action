@@ -2,16 +2,17 @@ on: [push]
 
 jobs:
 
-  shellcheck:
-    name: Shellcheck
-    runs-on: ubuntu-22.04
+  tests_job:
+    name: Test scripts
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: ludeeus/action-shellcheck@master
+      - uses: articulate/actions-markdownlint@v1.1.0
 
   hits_counter_job:
     name: Generate and deploy HoC-badge
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: ./
@@ -19,6 +20,8 @@ jobs:
           dir: .
           since: 2000-01-01
           output_dir: output-dir
+          rounding: I
+          color: green
       - uses: peaceiris/actions-gh-pages@v3.9.3
         with:
           publish_dir: output-dir
